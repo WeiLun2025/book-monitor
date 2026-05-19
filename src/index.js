@@ -1,6 +1,7 @@
 // src/index.js
 import { parse } from './parsers/kadokawa.js';
 import { getKeywords } from './config.js';
+import { loadSeen, saveSeen } from './store.js';
 
 const URL = 'https://www.kadokawa.com.tw/products';
 
@@ -26,12 +27,35 @@ async function main() {
   const keywords = await getKeywords();
   const books = parse(html);
   const matched = filterByKeywords(books, keywords);
+  const seen = await loadSeen();
 
-  console.log(`共找到 ${books.length} 筆商品，符合關鍵字 ${matched.length} 筆\n`);
-  matched.forEach(b => {
-    console.log(`[${b.id}] ${b.title}`);
-    console.log(`  → ${b.url}\n`);
-  });
+  const newBooks = [];
+
+  for (const book of matched) {
+    const key = `${book.source}_${book.id}`;
+    if (seen[key]) continue;
+
+    seen[key] = {
+      title: book.title,
+      source: book.source,
+      url: book.url,
+      created_at: new Date().toISOString(),
+    };
+
+    newBooks.push(book);
+  }
+
+  await saveSeen(seen);
+
+  if (newBooks.length === 0) {
+    console.log('沒有新書。');
+  } else {
+    console.log(`發現 ${newBooks.length} 本新書！\n`);
+    newBooks.forEach(b => {
+      console.log(`[新書] ${b.title}`);
+      console.log(`  → ${b.url}\n`);
+    });
+  }
 }
 
 main();
