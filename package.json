@@ -1,0 +1,13 @@
+{
+  "name": "book-monitor",
+  "version": "1.0.0",
+  "description": "自動監控出版社新書，發送 Email 通知",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
