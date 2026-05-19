@@ -2,6 +2,7 @@
 import { parse } from './parsers/kadokawa.js';
 import { getKeywords } from './config.js';
 import { loadSeen, saveSeen } from './store.js';
+import { sendNotification } from './notifier.js';
 
 const URL = 'https://www.kadokawa.com.tw/products';
 
@@ -55,6 +56,7 @@ async function main() {
       console.log(`[新書] ${b.title}`);
       console.log(`  → ${b.url}\n`);
     });
+    await sendNotification(newBooks);
   }
 }
 
